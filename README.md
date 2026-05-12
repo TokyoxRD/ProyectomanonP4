@@ -11,7 +11,6 @@ Email: hansel3@gmail.com
 Contraseña: 123456
 
 
-
 # 🍗 PoYos - Portal de Delivery de Pollo Frito
 
 **PoYos** es una plataforma web de delivery de comida especializada en pollo frito, donde múltiples negocios pueden registrarse, publicar su menú y recibir pedidos de clientes.
