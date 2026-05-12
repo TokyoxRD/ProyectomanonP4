@@ -145,3 +145,4 @@ async function seedPoyosDemoRestaurants() {
 }
 
 module.exports = { User, Restaurant, MenuItem, Order, OrderItem, sequelize, syncDB };
+   

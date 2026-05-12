@@ -6,3 +6,4 @@ router.post('/', ctrl.create);
 router.get('/restaurant/:restaurantId', ctrl.getByRestaurant);
 
 module.exports = router;
+   

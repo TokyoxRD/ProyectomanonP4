@@ -230,3 +230,4 @@ function closeModal() {
 function saveCart() {
   localStorage.setItem(cartKey, JSON.stringify(cart));
 }
+  

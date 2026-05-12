@@ -282,3 +282,4 @@ En el plan gratuito de Render el disco del contenedor es **efímero**: las fotos
 ## 👥 Autores
 
 - **Hansel Polanco **
+   

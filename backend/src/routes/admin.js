@@ -9,3 +9,4 @@ router.delete('/users/:id', isAdmin, adminCtrl.remove);
 router.get('/orders', isAdmin, orderCtrl.getAll);
 
 module.exports = router;
+   

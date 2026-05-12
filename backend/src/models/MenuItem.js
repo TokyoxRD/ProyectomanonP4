@@ -24,3 +24,4 @@ const MenuItem = sequelize.define('MenuItem', {
 }, { tableName: 'menu_items', timestamps: true });
 
 module.exports = MenuItem;
+   

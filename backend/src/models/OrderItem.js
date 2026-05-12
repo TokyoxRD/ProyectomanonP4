@@ -16,3 +16,4 @@ const OrderItem = sequelize.define('OrderItem', {
 }, { tableName: 'order_items', timestamps: false });
 
 module.exports = OrderItem;
+   

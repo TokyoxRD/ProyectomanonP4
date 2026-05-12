@@ -22,3 +22,4 @@ const Restaurant = sequelize.define('Restaurant', {
 }, { tableName: 'restaurants', timestamps: true });
 
 module.exports = Restaurant;
+   

@@ -372,3 +372,4 @@ app.listen(PORT, () => {
   const where = isProd ? `puerto ${PORT} (producción)` : `http://localhost:${PORT}`;
   console.log(`🍗 PoYos Frontend corriendo en ${where}`);
 });
+  

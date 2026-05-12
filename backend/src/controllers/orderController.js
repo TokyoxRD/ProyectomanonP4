@@ -61,3 +61,4 @@ exports.getAll = async (req, res) => {
     res.status(500).json({ message: 'Error', error: err.message });
   }
 };
+   
