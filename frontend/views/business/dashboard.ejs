@@ -1,0 +1,145 @@
+<%- include('../partials/navbar') %>
+
+<div class="page-container">
+  <div class="section-title mb-2"><span class="dot"></span>Panel de mi negocio</div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num"><%= stats.totalItems || 0 %></div>
+      <div class="stat-label">Platos en el menú</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-num"><%= stats.totalOrders || 0 %></div>
+      <div class="stat-label">Pedidos recibidos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">$<%= (stats.totalRevenue || 0).toFixed(2) %></div>
+      <div class="stat-label">Ingresos totales</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('tabInfo', this)">📋 Mi negocio</button>
+    <button class="tab-btn" onclick="switchTab('tabMenu', this)">🍗 Menú</button>
+    <button class="tab-btn" onclick="switchTab('tabOrders', this)">📦 Pedidos</button>
+  </div>
+
+  <!-- TAB: Info del negocio -->
+  <div class="tab-content active" id="tabInfo">
+    <% if (!restaurant) { %>
+      <!-- Aún no tiene restaurante -->
+      <div class="empty-state mb-3">
+        <div class="empty-icon">🏪</div>
+        <p>Aún no has registrado tu negocio.</p>
+        <a href="/business/create" class="btn-poyos mt-2">+ Registrar mi negocio</a>
+      </div>
+    <% } else { %>
+      <div class="card-poyos p-3 mb-3" style="display:flex; gap:1.5rem; align-items:flex-start;">
+        <img src="<%= restaurant.image ? '/uploads/' + restaurant.image : '/images/restaurant_default.png' %>"
+             style="width:120px; height:120px; object-fit:cover; border-radius:var(--radius-sm);">
+        <div style="flex:1;">
+          <div style="font-weight:800; font-size:1.2rem;"><%= restaurant.name %></div>
+          <div class="text-sm text-gris">📍 <%= restaurant.address %></div>
+          <div class="text-sm text-gris">📞 <%= restaurant.phone || 'Sin teléfono' %></div>
+          <p class="text-sm mt-1"><%= restaurant.description || '' %></p>
+          <div class="d-flex gap-2 mt-2">
+            <a href="/business/edit" class="btn-poyos" style="font-size:0.85rem; padding:7px 16px;">✏️ Editar</a>
+            <form action="/business/delete" method="POST" onsubmit="return confirm('¿Eliminar tu negocio? Esta acción es irreversible.')">
+              <button type="submit" class="btn-rojo" style="font-size:0.85rem; padding:7px 16px;">🗑 Eliminar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mapa del negocio -->
+      <% if (restaurant.lat && restaurant.lng) { %>
+        <div id="bizMap" style="height:220px; border-radius:var(--radius); border:2px solid var(--gris-medio); margin-bottom:1rem;"></div>
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            var m = L.map('bizMap').setView([<%= restaurant.lat %>, <%= restaurant.lng %>], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap'}).addTo(m);
+            L.marker([<%= restaurant.lat %>, <%= restaurant.lng %>]).addTo(m).bindPopup('<b><%= restaurant.name %></b>').openPopup();
+          });
+        </script>
+      <% } %>
+    <% } %>
+  </div>
+
+  <!-- TAB: Menú -->
+  <div class="tab-content" id="tabMenu">
+    <% if (!restaurant) { %>
+      <div class="empty-state"><div class="empty-icon">⚠️</div><p>Primero registra tu negocio.</p></div>
+    <% } else { %>
+      <div class="flex-between mb-2">
+        <span class="text-sm text-gris"><%= menuItems.length %> platos registrados</span>
+        <a href="/business/menu/new" class="btn-poyos">+ Agregar plato</a>
+      </div>
+
+      <% if (menuItems.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">🍗</div>
+          <p>No has agregado platos aún.</p>
+        </div>
+      <% } else { %>
+        <% menuItems.forEach(function(item) { %>
+          <div class="menu-item-row">
+            <img src="<%= item.image ? '/uploads/' + item.image : '/images/tenders.png' %>" alt="<%= item.name %>">
+            <div class="item-info">
+              <div class="item-name"><%= item.name %></div>
+              <div class="item-cat"><%= item.category %></div>
+              <div class="item-price">$<%= parseFloat(item.price).toFixed(2) %></div>
+            </div>
+            <div class="item-actions">
+              <a href="/business/menu/edit/<%= item.id %>" class="btn-poyos" style="padding:6px 12px; font-size:0.82rem;">✏️</a>
+              <form action="/business/menu/delete/<%= item.id %>" method="POST" onsubmit="return confirm('¿Eliminar este plato?')">
+                <button type="submit" class="btn-rojo" style="padding:6px 12px; font-size:0.82rem;">🗑</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    <% } %>
+  </div>
+
+  <!-- TAB: Pedidos -->
+  <div class="tab-content" id="tabOrders">
+    <% if (!orders || orders.length === 0) { %>
+      <div class="empty-state"><div class="empty-icon">📦</div><p>No has recibido pedidos aún.</p></div>
+    <% } else { %>
+      <div class="card-poyos" style="overflow:hidden;">
+        <table class="table-poyos">
+          <thead>
+            <tr>
+              <th>#</th><th>Cliente</th><th>Total</th><th>Tiempo</th><th>Fecha</th><th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% orders.forEach(function(o) { %>
+              <tr>
+                <td><b>#<%= o.id %></b></td>
+                <td><%= o.User ? o.User.name : 'N/A' %></td>
+                <td class="text-rojo fw-bold">$<%= parseFloat(o.total).toFixed(2) %></td>
+                <td>⏱ <%= o.delivery_time %> min</td>
+                <td class="text-sm"><%= new Date(o.createdAt).toLocaleDateString('es') %></td>
+                <td><span class="badge-role badge-<%= o.status === 'entregado' ? 'entregado' : 'pendiente' %>"><%= o.status %></span></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+
+<%- include('../partials/footer') %>

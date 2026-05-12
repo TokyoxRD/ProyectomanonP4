@@ -1,0 +1,111 @@
+<%- include('../partials/navbar') %>
+
+<div class="page-container">
+  <div class="section-title mb-2"><span class="dot"></span><%= typeof restaurant !== 'undefined' && restaurant ? 'Editar negocio' : 'Registrar mi negocio' %></div>
+
+  <div class="form-poyos" style="max-width:600px;">
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert-form alert-error"><%= error %></div>
+    <% } %>
+
+    <form action="<%= typeof restaurant !== 'undefined' && restaurant ? '/business/edit' : '/business/create' %>"
+          method="POST" enctype="multipart/form-data" id="bizForm">
+
+      <div class="form-group">
+        <label for="bizName">Nombre del negocio</label>
+        <input type="text" id="bizName" name="name" placeholder="Ej: El Rey del Pollo"
+               value="<%= typeof restaurant !== 'undefined' && restaurant ? restaurant.name : '' %>" required>
+      </div>
+
+      <div class="form-group">
+        <label for="bizDesc">Descripción</label>
+        <textarea id="bizDesc" name="description" placeholder="Describe tu negocio..."><%= typeof restaurant !== 'undefined' && restaurant ? restaurant.description : '' %></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="bizPhone">Teléfono</label>
+        <input type="text" id="bizPhone" name="phone" placeholder="809-000-0000"
+               value="<%= typeof restaurant !== 'undefined' && restaurant ? restaurant.phone : '' %>">
+      </div>
+
+      <div class="form-group">
+        <label for="bizAddress">Dirección</label>
+        <input type="text" id="bizAddress" name="address" placeholder="Busca tu dirección..."
+               value="<%= typeof restaurant !== 'undefined' && restaurant ? restaurant.address : '' %>"
+               oninput="searchBizAddress()" required>
+      </div>
+
+      <!-- Mapa para ubicación del negocio -->
+      <div class="form-group">
+        <label>Ubicación en el mapa <span class="text-sm text-gris">(haz clic para ajustar)</span></label>
+        <div id="bizFormMap" style="height:260px; border-radius:var(--radius); border:2px solid var(--gris-medio); margin-bottom:6px;"></div>
+        <input type="hidden" name="lat" id="bizLat" value="<%= typeof restaurant !== 'undefined' && restaurant ? restaurant.lat : '18.4861' %>">
+        <input type="hidden" name="lng" id="bizLng" value="<%= typeof restaurant !== 'undefined' && restaurant ? restaurant.lng : '-69.9312' %>">
+      </div>
+
+      <div class="form-group">
+        <label for="bizImage">Foto del negocio</label>
+        <input type="file" id="bizImage" name="image" accept="image/*">
+        <% if (typeof restaurant !== 'undefined' && restaurant && restaurant.image) { %>
+          <div class="mt-1">
+            <img src="/uploads/<%= restaurant.image %>" style="height:80px; border-radius:6px; object-fit:cover;">
+            <span class="text-sm text-gris">Imagen actual (sube otra para reemplazar)</span>
+          </div>
+        <% } %>
+      </div>
+
+      <button type="submit" class="btn-rojo w-100 justify-content-center">
+        <%= typeof restaurant !== 'undefined' && restaurant ? '💾 Guardar cambios' : '✅ Registrar negocio' %>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  var bizMarker;
+  var bizMap = L.map('bizFormMap').setView(
+    [<%= (typeof restaurant !== 'undefined' && restaurant && restaurant.lat) ? restaurant.lat : 18.4861 %>,
+     <%= (typeof restaurant !== 'undefined' && restaurant && restaurant.lng) ? restaurant.lng : -69.9312 %>], 14
+  );
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap'}).addTo(bizMap);
+
+  function setMarker(lat, lng) {
+    if (bizMarker) bizMap.removeLayer(bizMarker);
+    bizMarker = L.marker([lat, lng], {draggable: true}).addTo(bizMap);
+    document.getElementById('bizLat').value = lat;
+    document.getElementById('bizLng').value = lng;
+    bizMarker.on('dragend', function(e) {
+      var pos = e.target.getLatLng();
+      document.getElementById('bizLat').value = pos.lat;
+      document.getElementById('bizLng').value = pos.lng;
+    });
+  }
+
+  setMarker(
+    <%= (typeof restaurant !== 'undefined' && restaurant && restaurant.lat) ? restaurant.lat : 18.4861 %>,
+    <%= (typeof restaurant !== 'undefined' && restaurant && restaurant.lng) ? restaurant.lng : -69.9312 %>
+  );
+
+  bizMap.on('click', function(e) { setMarker(e.latlng.lat, e.latlng.lng); });
+
+  var bizSearchTimeout;
+  function searchBizAddress() {
+    clearTimeout(bizSearchTimeout);
+    bizSearchTimeout = setTimeout(function() {
+      var q = document.getElementById('bizAddress').value;
+      if (q.length < 5) return;
+      fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(q) + '&limit=1')
+        .then(r => r.json())
+        .then(data => {
+          if (data.length > 0) {
+            var lat = parseFloat(data[0].lat);
+            var lng = parseFloat(data[0].lon);
+            bizMap.setView([lat, lng], 16);
+            setMarker(lat, lng);
+          }
+        });
+    }, 600);
+  }
+</script>
+
+<%- include('../partials/footer') %>

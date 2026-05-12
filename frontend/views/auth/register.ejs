@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Cuenta | PoYos</title>
+  <meta name="description" content="Crea tu cuenta en PoYos para empezar a pedir pollo frito a domicilio.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="d-flex gap-4 align-items-center">
+
+      <!-- Formulario Registro -->
+      <div class="form-poyos" style="max-width:540px; margin: 0 auto;">
+        <div class="text-center mb-3">
+          <img src="/images/logotipo.png" alt="Logo" style="height: 150px; width: 300px; margin: 0 auto;">
+        </div>
+        <h2 class="text-center">Crear <span class="accent">cuenta</span></h2>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div class="alert-form alert-error"><%= error %></div>
+        <% } %>
+
+        <form action="/register" method="POST" id="registerForm">
+          <div class="form-group">
+            <label for="name">Nombre completo</label>
+            <input type="text" id="name" name="name" placeholder="Tu nombre" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" name="email" placeholder="tucorreo@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
+          </div>
+
+          <!-- Selector de rol -->
+          <div class="form-group">
+            <label>¿Cómo usarás PoYos?</label>
+            <div class="d-flex gap-2 mt-1">
+              <label class="role-option" id="roleClientLabel">
+                <input type="radio" name="role" value="client" id="roleClient" required checked>
+                <span>🍗 Cliente<br><small>Quiero pedir comida</small></span>
+              </label>
+              <label class="role-option" id="roleBusinessLabel">
+                <input type="radio" name="role" value="business" id="roleBusiness">
+                <span>🏪 Negocio<br><small>Quiero vender pollo</small></span>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-rojo w-100 justify-content-center mt-1" id="registerBtn">
+            Crear cuenta
+          </button>
+        </form>
+
+        <div class="form-footer-link mt-2">
+          ¿Ya tienes cuenta? <a href="/login">Inicia sesión</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    .role-option {
+      flex: 1;
+      border: 2px solid var(--gris-medio);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: var(--transition);
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .role-option:has(input:checked) {
+      border-color: var(--amarillo);
+      background-color: #fffbea;
+    }
+    .role-option input { display: none; }
+    .role-option small { color: var(--gris-texto); font-weight: 400; display: block; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

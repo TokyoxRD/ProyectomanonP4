@@ -1,0 +1,9 @@
+node_modules/
+.env
+public/uploads/*
+!public/uploads/seed-rest-1.jpg
+!public/uploads/seed-rest-2.jpg
+!public/uploads/seed-rest-3.jpg
+!public/uploads/seed-rest-4.jpg
+!public/uploads/seed-menu.jpg
+*.log

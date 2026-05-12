@@ -1,0 +1,50 @@
+<%- include('../partials/navbar') %>
+
+<div class="page-container">
+  <!-- Header -->
+  <div class="flex-between mb-2">
+    <div class="section-title"><span class="dot"></span>Restaurantes de Pollo</div>
+  </div>
+
+  <!-- Búsqueda -->
+  <form class="search-bar" action="/restaurants" method="GET">
+    <input type="text" name="q" placeholder="🔍 Busca por nombre o ubicación..."
+           value="<%= typeof query !== 'undefined' ? query : '' %>">
+    <button type="submit" class="btn-poyos">Buscar</button>
+    <% if (typeof query !== 'undefined' && query) { %>
+      <a href="/restaurants" class="btn-outline">Limpiar</a>
+    <% } %>
+  </form>
+
+  <!-- Grid de restaurantes -->
+  <% if (restaurants.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <p>No se encontraron restaurantes<% if (typeof query !== 'undefined' && query) { %> con "<%= query %>"<% } %>.</p>
+    </div>
+  <% } else { %>
+    <div class="row g-3">
+      <% restaurants.forEach(function(r) { %>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <a href="/restaurants/<%= r.id %>" class="text-decoration-none">
+            <div class="card-poyos">
+              <img class="card-img"
+                src="<%= r.image ? '/uploads/' + r.image : '/images/restaurant_default.png' %>"
+                alt="<%= r.name %>">
+              <div class="card-body">
+                <div class="card-title"><%= r.name %></div>
+                <div class="text-sm text-gris" style="margin-bottom:6px;">📍 <%= r.address %></div>
+                <% if (r.description) { %>
+                  <div class="card-desc"><%= r.description.substring(0,70) %><%= r.description.length > 70 ? '...' : '' %></div>
+                <% } %>
+                <span class="btn-rojo" style="font-size:0.8rem; padding:6px 14px;">Ver menú →</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

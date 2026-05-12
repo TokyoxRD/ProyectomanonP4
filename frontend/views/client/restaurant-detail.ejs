@@ -1,0 +1,88 @@
+<%- include('../partials/navbar') %>
+
+<div class="page-container">
+  <!-- Info del restaurante -->
+  <div class="card-poyos mb-3" style="flex-direction:row; display:flex; overflow:hidden;">
+    <img src="<%= restaurant.image ? '/uploads/' + restaurant.image : '/images/restaurant_default.png' %>"
+         alt="<%= restaurant.name %>"
+         style="width:220px; height:200px; object-fit:cover; flex-shrink:0;">
+    <div style="padding:1.5rem; flex:1;">
+      <h1 style="font-weight:800; font-size:1.6rem; margin-bottom:0.3rem;"><%= restaurant.name %></h1>
+      <p class="text-gris text-sm mb-1">📍 <%= restaurant.address %></p>
+      <% if (restaurant.phone) { %><p class="text-gris text-sm mb-1">📞 <%= restaurant.phone %></p><% } %>
+      <p style="margin-top:0.8rem; font-size:0.95rem;"><%= restaurant.description || '' %></p>
+    </div>
+  </div>
+
+  <!-- Mapa ubicación restaurante -->
+  <% if (restaurant.lat && restaurant.lng) { %>
+    <div class="mb-3">
+      <div class="section-title mb-1"><span class="dot"></span>Ubicación</div>
+      <div id="restaurantMap" style="height:220px; border-radius:var(--radius); border:2px solid var(--gris-medio);"></div>
+    </div>
+  <% } %>
+
+  <!-- Menú -->
+  <div class="section-title mb-2"><span class="dot"></span>Menú</div>
+
+  <% if (menuItems.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-icon">🍗</div>
+      <p>Este restaurante aún no tiene platos en el menú.</p>
+    </div>
+  <% } else { %>
+    <!-- Categorías -->
+    <%
+      const categorias = [...new Set(menuItems.map(m => m.category))];
+    %>
+    <% categorias.forEach(function(cat) { %>
+      <div class="section-title mt-3 mb-2" style="font-size:1rem;">
+        <span style="color:var(--gris-texto)">📂</span> <%= cat %>
+      </div>
+      <div class="row g-3">
+        <% menuItems.filter(m => m.category === cat).forEach(function(item) { %>
+          <div class="col-12 col-sm-6 col-md-4">
+            <div class="card-poyos">
+              <img class="card-img"
+                src="<%= item.image ? '/uploads/' + item.image : '/images/tenders.png' %>"
+                alt="<%= item.name %>">
+              <div class="card-body">
+                <div class="card-title"><%= item.name %></div>
+                <div class="card-price">$<%= parseFloat(item.price).toFixed(2) %></div>
+                <div class="card-desc"><%= item.description || '' %></div>
+                <button class="btn-poyos w-100 justify-content-center"
+                  onclick="addToCart({
+                    id: <%= item.id %>,
+                    name: '<%= item.name.replace(/'/g, "\\'") %>',
+                    price: <%= item.price %>,
+                    image: '<%= item.image || 'tenders.png' %>',
+                    restaurantId: <%= restaurant.id %>,
+                    restaurantName: '<%= restaurant.name.replace(/'/g, "\\'") %>'
+                  })">
+                  + Agregar al carrito
+                </button>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
+
+<% if (restaurant.lat && restaurant.lng) { %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var map = L.map('restaurantMap').setView([<%= restaurant.lat %>, <%= restaurant.lng %>], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    L.marker([<%= restaurant.lat %>, <%= restaurant.lng %>])
+      .addTo(map)
+      .bindPopup('<b><%= restaurant.name %></b><br><%= restaurant.address %>')
+      .openPopup();
+  });
+</script>
+<% } %>
+
+<%- include('../partials/footer') %>

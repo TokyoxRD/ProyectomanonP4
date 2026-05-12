@@ -1,0 +1,53 @@
+<%- include('../partials/navbar') %>
+
+<!-- Hero Banner -->
+<div class="page-container">
+  <div class="hero-poyos">
+    <div>
+      <h1>El mejor pollo frito,<br>a tu puerta 🍗</h1>
+      <p>Explora restaurantes de pollo cerca de ti y haz tu pedido en minutos.</p>
+      <a href="/restaurants" class="btn-rojo">Ver restaurantes</a>
+    </div>
+    <div class="hero-emoji">🍗</div>
+  </div>
+
+  <!-- Búsqueda rápida -->
+  <form class="search-bar" action="/restaurants" method="GET">
+    <input type="text" name="q" placeholder="🔍 Busca un restaurante o plato..." value="<%= query || '' %>">
+    <button type="submit" class="btn-poyos">Buscar</button>
+  </form>
+
+  <!-- Restaurantes Destacados -->
+  <div class="section-title">
+    <span class="dot"></span>
+    Restaurantes disponibles
+  </div>
+
+  <% if (restaurants.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-icon">🏪</div>
+      <p>Aún no hay restaurantes registrados. ¡Sé el primero en agregar el tuyo!</p>
+    </div>
+  <% } else { %>
+    <div class="row g-3">
+      <% restaurants.forEach(function(r) { %>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <a href="/restaurants/<%= r.id %>" class="text-decoration-none">
+            <div class="card-poyos">
+              <img class="card-img"
+                src="<%= r.image ? '/uploads/' + r.image : '/images/restaurant_default.png' %>"
+                alt="<%= r.name %>" >
+              <div class="card-body">
+                <div class="card-title"><%= r.name %></div>
+                <div class="text-sm text-gris mb-1">📍 <%= r.address %></div>
+                <div class="text-sm text-gris"><%= r.phone || '' %></div>
+              </div>
+            </div>
+          </a>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

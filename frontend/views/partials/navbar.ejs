@@ -1,0 +1,107 @@
+<%- include('./head') %>
+
+  <!-- Navbar -->
+  <nav class="navbar-poyos">
+    <!-- Logo / Marca -->
+    <a href="/" class="navbar-brand-poyos">
+      <img class="navbar-logo-img" src="/images/logotipo.png" alt="Logo">
+      <span class="navbar-brand-text">Po<span style="color:var(--rojo)">Y</span>os</span>
+    </a>
+
+    <!-- Links centrales -->
+    <% if (typeof user !=='undefined' && user) { %>
+      <ul class="navbar-links">
+        <li><a href="/"
+            class="<%= typeof activePage !== 'undefined' && activePage === 'home' ? 'active' : '' %>">Inicio</a></li>
+        <li><a href="/restaurants"
+            class="<%= typeof activePage !== 'undefined' && activePage === 'restaurants' ? 'active' : '' %>">Restaurantes</a>
+        </li>
+
+        <% if (user.role==='business' || user.role==='admin' ) { %>
+          <li><a href="/business/dashboard"
+              class="<%= typeof activePage !== 'undefined' && activePage === 'business' ? 'active' : '' %>">Mi
+              Negocio</a></li>
+          <% } %>
+
+            <% if (user.role==='admin' ) { %>
+              <li><a href="/admin"
+                  class="<%= typeof activePage !== 'undefined' && activePage === 'admin' ? 'active' : '' %>">Admin</a>
+              </li>
+              <% } %>
+      </ul>
+      <% } %>
+
+        <!-- Derecha: saludo + carrito + logout -->
+        <div class="navbar-right<%= (typeof user !== 'undefined' && user) ? ' navbar-right--authed' : '' %>">
+          <% if (typeof user !=='undefined' && user) { %>
+            <span class="greeting-badge" title="<%= greeting %>, <%= user.name %>">
+              <span class="greeting-line"><%= greeting %>,</span>
+              <span class="greeting-name"><%= user.name %></span>
+            </span>
+
+            <% if (user) { %>
+              <!-- Botón carrito -->
+              <button class="cart-btn" id="cartToggleBtn" type="button" onclick="toggleCart()" aria-label="Abrir carrito">
+                <span class="cart-btn-icon" aria-hidden="true">🛒</span>
+                <span class="cart-btn-label">Carrito</span>
+                <span class="cart-count" id="cartCount">0</span>
+              </button>
+              <% } %>
+
+                <a href="/logout" class="btn-outline navbar-btn-logout">Salir</a>
+                <% } else { %>
+                  <a href="/login" class="btn-poyos">Iniciar sesión</a>
+                  <% } %>
+        </div>
+  </nav>
+
+  <!-- Carrito Sidebar -->
+  <% if (typeof user !=='undefined' && user) { %>
+    <script>
+      window.currentUserId = <%= user.id %>;
+    </script>
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+      <div class="cart-sidebar-header">
+        <h3>🛒 Tu pedido</h3>
+        <button class="cart-close-btn" onclick="toggleCart()">✕</button>
+      </div>
+      <div class="cart-items-list" id="cartItemsList">
+        <div class="empty-state">
+          <div class="empty-icon">🍗</div>
+          <p>Tu carrito está vacío</p>
+        </div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Total:</span>
+          <span class="cart-total-amount" id="cartTotal">$0.00</span>
+        </div>
+        <div class="form-group mb-2">
+          <label for="deliveryAddress">📍 Dirección de entrega</label>
+          <input type="text" id="deliveryAddress" placeholder="Escribe tu dirección..."
+            oninput="searchDeliveryAddress()">
+        </div>
+        <div id="deliveryMap"
+          style="height:160px; border-radius:8px; border:2px solid var(--gris-medio); margin-bottom:1rem; display:none;">
+        </div>
+        <button class="btn-rojo w-100" onclick="confirmOrder()" id="confirmOrderBtn">
+          Confirmar pedido
+        </button>
+      </div>
+    </div>
+    <% } %>
+
+      <!-- Modal Pedido Confirmado -->
+      <div class="modal-overlay" id="orderModal">
+        <div class="modal-box" style="position: relative;">
+          <button onclick="closeModal()"
+            style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gris-texto);">✕</button>
+          <div class="modal-icon">✅</div>
+          <h3>¡Pedido realizado!</h3>
+          <p>Tu pedido ha sido recibido con éxito.</p>
+          <div class="modal-time" id="deliveryTimeMsg">⏱ Tiempo de entrega: 30 min</div>
+          <p class="text-sm text-gris">Te avisaremos cuando esté en camino 🛵</p>
+          <button class="btn-poyos mt-2 w-100" onclick="closeModal()">¡Entendido!</button>
+        </div>
+      </div>

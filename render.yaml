@@ -1,0 +1,27 @@
+# Blueprint de Render: dos Web Services en el mismo repositorio.
+# Tras conectar el repo, Render puede crear ambos servicios desde este archivo.
+# Debes completar las variables secretas (DB_*, JWT_SECRET, SESSION_SECRET, FRONTEND_URL, API_URL) en el panel.
+#
+# Orden recomendado: 1) Desplegar backend y copiar su URL pública.
+#                     2) Desplegar frontend con API_URL = esa URL (https://...).
+
+services:
+  - type: web
+    name: poyos-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  - type: web
+    name: poyos-frontend
+    runtime: node
+    rootDir: frontend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production

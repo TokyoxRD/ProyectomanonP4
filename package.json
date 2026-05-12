@@ -1,0 +1,13 @@
+{
+  "name": "poyos-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Raíz del monorepo. En Render usa los scripts render:* si dejas Root Directory vacío.",
+  "scripts": {
+    "start": "node -e \"console.error('\\n[PoYos] En Render no uses npm start en la raíz. Build/Start: ver README sección Render (render-backend-* / render-frontend-*).\\n'); process.exit(1)\"",
+    "render-backend-install": "npm install --prefix backend",
+    "render-backend-start": "npm start --prefix backend",
+    "render-frontend-install": "npm install --prefix frontend",
+    "render-frontend-start": "npm start --prefix frontend"
+  }
+}
